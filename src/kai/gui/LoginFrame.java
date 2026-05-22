@@ -15,14 +15,12 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import kai.controller.AuthManager;
 
 /**
@@ -189,10 +187,10 @@ public class LoginFrame extends JFrame {
 
     // ── Logic ──────────────────────────────────────────────────────────
     private void proseLogin() {
-        // String nik  = txtNIK.getText().trim();
-        // String pass = new String(txtPassword.getPassword());
-        String nik = "3201012501900001";
-        String pass = "password123";
+        String nik  = txtNIK.getText().trim();
+        String pass = new String(txtPassword.getPassword());
+        // String nik = "3201012501900001";
+        // String pass = "password123";
 
         if (nik.isEmpty() || pass.isEmpty()) {
             lblError.setText("NIK dan password tidak boleh kosong!");

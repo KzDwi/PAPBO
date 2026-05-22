@@ -16,7 +16,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 import kai.controller.AuthManager;
 import kai.controller.SistemAlokasi;
 import kai.model.AkunPengguna;
@@ -126,16 +124,15 @@ public class DashboardFrame extends JFrame {
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         };
-        sidebar.setPreferredSize(new Dimension(200, 0));
+        sidebar.setPreferredSize(new Dimension(240, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBorder(BorderFactory.createEmptyBorder(16, 0, 16, 0));
+        sidebar.setBorder(BorderFactory.createEmptyBorder(12, 0,12, 0));
 
         navButtons = new JButton[navNames.length];
 
         for (int i = 0; i < navNames.length; i++) {
             final int idx = i;
             JButton btn = createNavButton(navIcons[i], navNames[i]);
-            btn.setAlignmentX(Component.LEFT_ALIGNMENT);
             navButtons[i] = btn;
             btn.addActionListener(e -> switchPanel(idx));
             sidebar.add(btn);
@@ -183,9 +180,10 @@ public class DashboardFrame extends JFrame {
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setMaximumSize(new Dimension(800, 46));
-        btn.setPreferredSize(new Dimension(200, 46));
-        btn.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 16));
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
+        btn.setPreferredSize(new Dimension(240, 46));
+        btn.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 8));
+        btn.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
     }
