@@ -96,4 +96,38 @@ public class AuthManagerImpl implements AuthManager {
     public boolean isNikTerdaftar(String nik) {
         return daftarAkun.containsKey(nik);
     }
+
+    /**
+     * Memvalidasi data pra-registrasi yang dikirim GUI sebagai String mentah.
+     * Logika ini dipindah dari GUI ke sini agar Controller yang bertanggung jawab
+     * atas aturan bisnis, bukan lapisan tampilan.
+     *
+     * @param pass    password yang dimasukkan
+     * @param pass2   konfirmasi password
+     * @param umurStr umur dalam String dari field input
+     * @return pesan error jika tidak valid, atau {@code null} jika semua lolos
+     */
+    @Override
+    public String validasiPraRegistrasi(String pass, String pass2, String umurStr) {
+        // Aturan bisnis: password dan konfirmasi harus cocok
+        if (!pass.equals(pass2)) {
+            return "Password dan konfirmasi password tidak cocok!";
+        }
+        // Aturan bisnis: umur harus berupa angka yang bisa di-parse
+        try {
+            Integer.parseInt(umurStr);
+        } catch (NumberFormatException ex) {
+            return "Umur harus berupa angka!";
+        }
+        return null; // semua valid
+    }
+
+    /**
+     * Melakukan parsing String umur menjadi int.
+     * Harus dipanggil setelah {@link #validasiPraRegistrasi} mengembalikan null.
+     */
+    @Override
+    public int parseUmur(String umurStr) {
+        return Integer.parseInt(umurStr);
+    }
 }

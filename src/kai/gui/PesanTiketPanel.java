@@ -36,7 +36,6 @@ import kai.model.Gerbong;
 import kai.model.HasilPemesanan;
 import kai.model.JenisKelamin;
 import kai.model.Kereta;
-import kai.model.Penumpang;
 import kai.model.StatusKesehatan;
 
 /**
@@ -58,6 +57,7 @@ public class PesanTiketPanel extends JPanel {
     private JLabel                    lblInfoGerbong;
     private JLabel                    lblSisaKursi;
     private JTextArea                 taRuleInfo;
+    private JTabbedPane               tabGerbong;
 
     // ── Callback ke parent ─────────────────────────────────────────────
     private final Runnable onPesanBerhasil;
@@ -237,7 +237,7 @@ public class PesanTiketPanel extends JPanel {
         panel.add(top, BorderLayout.NORTH);
 
         // Tab gerbong
-        JTabbedPane tabGerbong = new JTabbedPane();
+        tabGerbong = new JTabbedPane();
         tabGerbong.setFont(UIConstants.FONT_NORMAL);
         tabGerbong.setBackground(Color.WHITE);
         panel.add(tabGerbong, BorderLayout.CENTER);
@@ -305,62 +305,22 @@ public class PesanTiketPanel extends JPanel {
     }
 
     private void updateRuleInfo() {
-        JenisKelamin   gender = (JenisKelamin)   cmbGender.getSelectedItem();
-        StatusKesehatan status = (StatusKesehatan) cmbStatus.getSelectedItem();
-        if (gender == null || status == null) return;
-
-        String info;
-        if (status.isMembutuhkanPrioritas()) {
-            info = "\u2605 Status " + status.getDisplay() + " → Anda akan dialokasikan ke " +
-                   "GERBONG PRIORITAS (Gerbong 1). Layanan khusus tersedia.";
-        } else if (gender == JenisKelamin.PEREMPUAN) {
-            info = "\u2640 Penumpang perempuan normal → Diprioritaskan di GERBONG REGULER WANITA. " +
-                   "Jika penuh, akan dialihkan ke Gerbong Campur.";
-        } else {
-            info = "\u2642 Penumpang laki-laki normal → Dialokasikan ke GERBONG REGULER CAMPUR.";
-        }
-        taRuleInfo.setText(info);
+        taRuleInfo.setText(SistemAlokasi.getInstance().getInfoAturanGerbong(
+            (JenisKelamin) cmbGender.getSelectedItem(),
+            (StatusKesehatan) cmbStatus.getSelectedItem()));
     }
 
     // ── Proses Pemesanan ───────────────────────────────────────────────
     private void prosesPemesanan() {
         String nama = txtNama.getText().trim();
-        
-        // 1. Validasi Nama: Tidak boleh kosong
-        if (nama.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nama penumpang tidak boleh kosong!",
-                                        "Validasi", JOptionPane.WARNING_MESSAGE);
+        int    umur = (Integer) spnUmur.getValue();
+
+        // Delegasi validasi ke Controller — GUI hanya menampilkan pesan error yang dikembalikan
+        String errorValidasi = SistemAlokasi.getInstance().validasiDataPemesanan(nama, umur);
+        if (errorValidasi != null) {
+            JOptionPane.showMessageDialog(this, errorValidasi, "Validasi", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        // 2. Validasi Nama: Tidak boleh ada angka atau karakter spesial
-        // Menggunakan Regex: ^[a-zA-Z\\s]+$ (Hanya huruf A-Z dan spasi)
-        if (!nama.matches("^[a-zA-Z\\s]+$")) {
-            JOptionPane.showMessageDialog(this, 
-                "Nama hanya boleh berisi huruf dan spasi!\n(Tidak boleh ada angka atau karakter spesial)",
-                "Gagal Validasi Nama", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // 3. Validasi Umur: Memastikan umur dalam rentang logika yang benar
-        int umur = (Integer) spnUmur.getValue();
-        if (umur <= 0 || umur > 120) {
-            JOptionPane.showMessageDialog(this, 
-                "Masukkan umur yang valid (antara 1 sampai 120 tahun)!",
-                "Gagal Validasi Umur", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        AkunPengguna akun = AuthManager.getInstance().getAkunAktif();
-        String nik = akun != null ? akun.getNik() : "TAMU";
-
-        // Jika lolos validasi, buat objek Penumpang
-        Penumpang p = new Penumpang(
-            nik, nama,
-            umur,
-            (JenisKelamin)   cmbGender.getSelectedItem(),
-            (StatusKesehatan) cmbStatus.getSelectedItem()
-        );
 
         Kereta kereta = (Kereta) cmbKereta.getSelectedItem();
         if (kereta == null) {
@@ -368,10 +328,19 @@ public class PesanTiketPanel extends JPanel {
             return;
         }
 
-        HasilPemesanan hasil = SistemAlokasi.getInstance().prosesPemesanan(kereta, p);
+        AkunPengguna akun = AuthManager.getInstance().getAkunAktif();
+        String nik = akun != null ? akun.getNik() : "TAMU";
+
+        // Delegasi pembuatan Penumpang dan proses pemesanan ke Controller
+        HasilPemesanan hasil = SistemAlokasi.getInstance().prosesPemesananDariGUI(
+            kereta, nik, nama, umur,
+            (JenisKelamin)    cmbGender.getSelectedItem(),
+            (StatusKesehatan) cmbStatus.getSelectedItem()
+        );
 
         if (hasil.isBerhasil()) {
             showTiketDialog(hasil);
+            rebuildTabs(tabGerbong);
             if (onPesanBerhasil != null) onPesanBerhasil.run();
         } else {
             JOptionPane.showMessageDialog(this,

@@ -134,4 +134,73 @@ public class SistemAlokasi {
     // ── Getter ─────────────────────────────────────────────────────────
     public List<Kereta>         getDaftarKereta()      { return daftarKereta; }
     public List<HasilPemesanan> getRiwayatPemesanan()  { return riwayatPemesanan; }
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── Method Validasi & Helper (dipanggil dari GUI) ──────────────────
+    // ══════════════════════════════════════════════════════════════════
+
+    /**
+     * Memvalidasi data mentah pemesanan sebelum membuat objek Penumpang.
+     * Logika validasi ada di sini (bukan di GUI) agar bisa diuji secara independen.
+     *
+     * @param nama  nama penumpang (String mentah dari form)
+     * @param umur  umur penumpang (int dari spinner)
+     * @return pesan error jika tidak valid, atau {@code null} jika lolos semua validasi
+     */
+    public String validasiDataPemesanan(String nama, int umur) {
+        if (nama == null || nama.trim().isEmpty()) {
+            return "Nama penumpang tidak boleh kosong!";
+        }
+        // Aturan bisnis: nama hanya boleh huruf dan spasi
+        if (!nama.matches("^[a-zA-Z\\s]+$")) {
+            return "Nama hanya boleh berisi huruf dan spasi!\n(Tidak boleh ada angka atau karakter spesial)";
+        }
+        // Aturan bisnis: rentang umur yang logis
+        if (umur <= 0 || umur > 120) {
+            return "Masukkan umur yang valid (antara 1 sampai 120 tahun)!";
+        }
+        return null; // semua valid
+    }
+
+    /**
+     * Mengembalikan teks informasi aturan alokasi gerbong berdasarkan
+     * status kesehatan dan jenis kelamin penumpang.
+     * Logika aturan bisnis ini tidak boleh ada di GUI.
+     *
+     * @param gender jenis kelamin penumpang
+     * @param status status kesehatan penumpang
+     * @return String informasi aturan gerbong yang relevan
+     */
+    public String getInfoAturanGerbong(JenisKelamin gender, StatusKesehatan status) {
+        if (gender == null || status == null) return "";
+        if (status.isMembutuhkanPrioritas()) {
+            return "\u2605 Status " + status.getDisplay() + " \u2192 Anda akan dialokasikan ke "
+                 + "GERBONG PRIORITAS (Gerbong 1). Layanan khusus tersedia.";
+        } else if (gender == JenisKelamin.PEREMPUAN) {
+            return "\u2640 Penumpang perempuan normal \u2192 Diprioritaskan di GERBONG REGULER WANITA. "
+                 + "Jika penuh, akan dialihkan ke Gerbong Campur.";
+        } else {
+            return "\u2642 Penumpang laki-laki normal \u2192 Dialokasikan ke GERBONG REGULER CAMPUR.";
+        }
+    }
+
+    /**
+     * Entry point dari GUI: menerima data primitif/String mentah,
+     * merakit objek {@link Penumpang} secara mandiri, lalu memproses pemesanan.
+     * GUI tidak perlu tahu cara membuat Penumpang.
+     *
+     * @param kereta  kereta yang dipilih
+     * @param nik     NIK penumpang dari sesi login
+     * @param nama    nama penumpang (sudah lolos validasi)
+     * @param umur    umur penumpang (sudah lolos validasi)
+     * @param gender  jenis kelamin
+     * @param status  status kesehatan
+     * @return HasilPemesanan (berhasil / gagal)
+     */
+    public HasilPemesanan prosesPemesananDariGUI(Kereta kereta, String nik,
+            String nama, int umur, JenisKelamin gender, StatusKesehatan status) {
+        // Controller yang merakit Model — bukan GUI
+        Penumpang penumpang = new Penumpang(nik, nama, umur, gender, status);
+        return prosesPemesanan(kereta, penumpang);
+    }
 }

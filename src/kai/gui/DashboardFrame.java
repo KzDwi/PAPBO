@@ -47,6 +47,8 @@ public class DashboardFrame extends JFrame {
     private String[]       panelKeys  = {"home", "pesan", "riwayat", "profil"};
 
     private RiwayatPanel   riwayatPanel;
+    private JPanel         sidebarStatPanel;
+    private JPanel         homeStatsRow;
 
     public DashboardFrame() {
         setTitle("KAI — Sistem Tiket & Alokasi Kursi");
@@ -142,8 +144,10 @@ public class DashboardFrame extends JFrame {
         sidebar.add(Box.createVerticalGlue());
 
         // Stat kursi sisa
-        JPanel statPanel = buildStatPanel();
-        sidebar.add(statPanel);
+        sidebarStatPanel = new JPanel(new GridLayout(1, 1));
+        sidebarStatPanel.setOpaque(false);
+        sidebarStatPanel.add(buildStatPanelContent());
+        sidebar.add(sidebarStatPanel);
 
         // Aktifkan tab pertama
         switchPanel(0);
@@ -188,7 +192,7 @@ public class DashboardFrame extends JFrame {
         return btn;
     }
 
-    private JPanel buildStatPanel() {
+    private JPanel buildStatPanelContent() {
         JPanel p = new JPanel(new GridLayout(0, 1, 0, 4));
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 12));
@@ -209,6 +213,23 @@ public class DashboardFrame extends JFrame {
         return p;
     }
 
+    public void refreshDashboardStats() {
+        if (sidebarStatPanel != null) {
+            sidebarStatPanel.removeAll();
+            sidebarStatPanel.add(buildStatPanelContent());
+            sidebarStatPanel.revalidate();
+            sidebarStatPanel.repaint();
+        }
+        if (homeStatsRow != null) {
+            homeStatsRow.removeAll();
+            for (Kereta k : SistemAlokasi.getInstance().getDaftarKereta()) {
+                homeStatsRow.add(buildKeretaCard(k));
+            }
+            homeStatsRow.revalidate();
+            homeStatsRow.repaint();
+        }
+    }
+
     // ── Content Area ───────────────────────────────────────────────────
     private JPanel buildContentArea() {
         cardLayout  = new CardLayout();
@@ -223,6 +244,7 @@ public class DashboardFrame extends JFrame {
         riwayatPanel = new RiwayatPanel();
         PesanTiketPanel pesanPanel = new PesanTiketPanel(() -> {
             riwayatPanel.refresh();
+            refreshDashboardStats();
         });
         contentArea.add(pesanPanel, "pesan");
 
@@ -280,13 +302,13 @@ public class DashboardFrame extends JFrame {
         centerPanel.setOpaque(false);
 
         // Stat cards
-        JPanel statsRow = new JPanel(new GridLayout(1, 4, 12, 0));
-        statsRow.setOpaque(false);
-        statsRow.setPreferredSize(new Dimension(0, 100));
+        homeStatsRow = new JPanel(new GridLayout(1, 4, 12, 0));
+        homeStatsRow.setOpaque(false);
+        homeStatsRow.setPreferredSize(new Dimension(0, 100));
         for (Kereta k : SistemAlokasi.getInstance().getDaftarKereta()) {
-            statsRow.add(buildKeretaCard(k));
+            homeStatsRow.add(buildKeretaCard(k));
         }
-        centerPanel.add(statsRow, BorderLayout.NORTH);
+        centerPanel.add(homeStatsRow, BorderLayout.NORTH);
 
         // TOMBOL MENUJU PESAN TIKET (Diletakkan di atas Rules)
         JPanel actionArea = new JPanel(new FlowLayout(FlowLayout.CENTER));

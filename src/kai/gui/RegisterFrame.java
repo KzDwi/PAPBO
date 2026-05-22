@@ -198,27 +198,24 @@ public class RegisterFrame extends JFrame {
         lblError.setText(" ");
         lblSuccess.setText(" ");
 
-        String nik   = txtNIK.getText().trim();
-        String nama  = txtNama.getText().trim();
-        String email = txtEmail.getText().trim();
+        String nik     = txtNIK.getText().trim();
+        String nama    = txtNama.getText().trim();
+        String email   = txtEmail.getText().trim();
         String umurStr = txtUmur.getText().trim();
-        String alamat = txtAlamat.getText().trim();
-        String pass  = new String(txtPass.getPassword());
-        String pass2 = new String(txtPassKonfirm.getPassword());
+        String alamat  = txtAlamat.getText().trim();
+        String pass    = new String(txtPass.getPassword());
+        String pass2   = new String(txtPassKonfirm.getPassword());
         JenisKelamin gender = (JenisKelamin) cmbGender.getSelectedItem();
 
-        if (!pass.equals(pass2)) {
-            lblError.setText("Password dan konfirmasi password tidak cocok!");
+        // Delegasi validasi kecocokan password & parsing umur ke Controller
+        String errorPra = AuthManager.getInstance().validasiPraRegistrasi(pass, pass2, umurStr);
+        if (errorPra != null) {
+            lblError.setText(errorPra);
             return;
         }
 
-        int umur;
-        try {
-            umur = Integer.parseInt(umurStr);
-        } catch (NumberFormatException ex) {
-            lblError.setText("Umur harus berupa angka!");
-            return;
-        }
+        // Controller yang melakukan parsing — GUI tinggal pakai hasilnya
+        int umur = AuthManager.getInstance().parseUmur(umurStr);
 
         String err = AuthManager.getInstance().registrasi(nik, nama, pass, email, umur, gender, alamat);
         if (err != null) {
