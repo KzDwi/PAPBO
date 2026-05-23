@@ -24,7 +24,23 @@ public class SeatMapPanel extends JPanel {
 
     public SeatMapPanel() {
         setOpaque(false);
-        setPreferredSize(new Dimension(420, 200));
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        if (gerbong == null) return new Dimension(420, 200);
+
+        int total  = gerbong.getDaftarKursi().size();
+        int kolom  = 4;
+        int baris  = (int) Math.ceil((double) total / kolom);
+
+        int cellH  = 36;
+        int gapY   = 8;
+        int startY = 30;
+        int legendH = 30;
+
+        int totalHeight = startY + baris * (cellH + gapY) + legendH + 20;
+        return new Dimension(420, totalHeight);
     }
 
     public void setGerbong(Gerbong g) {
