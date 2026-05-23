@@ -11,7 +11,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -28,7 +27,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-
 import kai.controller.AuthManager;
 import kai.controller.SistemAlokasi;
 import kai.model.AkunPengguna;
@@ -288,8 +286,14 @@ public class PesanTiketPanel extends JPanel {
         for (Gerbong g : kereta.getDaftarGerbong()) {
             SeatMapPanel sm = new SeatMapPanel();
             sm.setGerbong(g);
+            
             JScrollPane scroll = new JScrollPane(sm);
+            scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scroll.getVerticalScrollBar().setUnitIncrement(16);
+            scroll.getHorizontalScrollBar().setUnitIncrement(16);
             scroll.setBorder(null);
+            
             String tabTitle = g.getKodeGerbong() + " (" + g.hitungKursiKosong() + ")";
             tabs.addTab(tabTitle, scroll);
         }

@@ -39,6 +39,7 @@ public class RegisterFrame extends JFrame {
         formWrap.add(buildFormCard());
 
         JScrollPane scroll = new JScrollPane(formWrap);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.setBorder(null);
         scroll.setBackground(UIConstants.KAI_ABU);
         root.add(scroll, BorderLayout.CENTER);

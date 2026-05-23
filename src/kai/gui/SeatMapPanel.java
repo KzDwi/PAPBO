@@ -9,9 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
-
 import javax.swing.JPanel;
-
 import kai.model.Gerbong;
 import kai.model.Kursi;
 
@@ -32,6 +30,20 @@ public class SeatMapPanel extends JPanel {
     public void setGerbong(Gerbong g) {
         this.gerbong      = g;
         this.kursiTerpilih = null;
+
+        if (g != null) {
+            int total = g.getDaftarKursi().size();
+            int kolom = 4;
+            int baris = (int) Math.ceil((double) total / kolom);
+            int cellH = 36;
+            int gapY = 8;
+            int startY = 30;
+            
+            int tinggiTotal = startY + (baris * (cellH + gapY)) + 60;
+            setPreferredSize(new Dimension(420, tinggiTotal));
+            revalidate();
+        }
+
         repaint();
     }
 

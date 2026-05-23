@@ -84,7 +84,7 @@ public class DashboardFrame extends JFrame {
             }
         };
         bar.setPreferredSize(new Dimension(0, 60));
-        bar.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        bar.setBorder(BorderFactory.createEmptyBorder(13, 20, 13, 20));
 
         // Kiri: Logo & nama app
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
