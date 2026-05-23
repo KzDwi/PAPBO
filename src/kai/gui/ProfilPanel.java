@@ -1,10 +1,9 @@
 package kai.gui;
 
+import java.awt.*;
+import javax.swing.*;
 import kai.controller.AuthManager;
 import kai.model.AkunPengguna;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Panel profil pengguna yang sedang login.
@@ -99,7 +98,7 @@ public class ProfilPanel extends JPanel {
         JPanel badge = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         badge.setOpaque(false);
         badge.setBorder(BorderFactory.createEmptyBorder(8, 20, 0, 20));
-        JLabel badgeLbl = new JLabel("  \u2713  Identitas Terverifikasi — Data KTP");
+        JLabel badgeLbl = new JLabel(" Identitas Terverifikasi — Data KTP");
         badgeLbl.setFont(UIConstants.FONT_KECIL);
         badgeLbl.setForeground(UIConstants.KAI_HIJAU);
         badgeLbl.setBorder(BorderFactory.createCompoundBorder(

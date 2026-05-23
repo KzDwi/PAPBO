@@ -43,7 +43,7 @@ public class DashboardFrame extends JFrame {
     // ── Nav button references ──────────────────────────────────────────
     private JButton[]      navButtons;
     private String[]       navNames   = {"Dashboard", "Pesan Tiket", "Riwayat", "Profil"};
-    private String[]       navIcons   = {"\uD83C\uDFE0", "\uD83C\uDFAB", "\uD83D\uDCCB", "\uD83D\uDC64"};
+    // private String[]       navIcons   = {"\uD83C\uDFE0", "\uD83C\uDFAB", "\uD83D\uDCCB", "\uD83D\uDC64"};
     private String[]       panelKeys  = {"home", "pesan", "riwayat", "profil"};
 
     private RiwayatPanel   riwayatPanel;
@@ -134,7 +134,7 @@ public class DashboardFrame extends JFrame {
 
         for (int i = 0; i < navNames.length; i++) {
             final int idx = i;
-            JButton btn = createNavButton(navIcons[i], navNames[i]);
+            JButton btn = createNavButton(navNames[i]);
             navButtons[i] = btn;
             btn.addActionListener(e -> switchPanel(idx));
             sidebar.add(btn);
@@ -154,13 +154,13 @@ public class DashboardFrame extends JFrame {
         return sidebar;
     }
 
-    private JButton createNavButton(String icon, String label) {
+    private JButton createNavButton(String label) {
         // Memanggil Versi 2 dengan warna default (biru muda)
-        return createNavButton(icon, label, new Color(200, 220, 255));
+        return createNavButton(label, new Color(200, 220, 255));
     }
 
-    private JButton createNavButton(String icon, String label, Color textColor) {
-        JButton btn = new JButton(icon + "  " + label) {
+    private JButton createNavButton(String label, Color textColor) {
+        JButton btn = new JButton(label) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -186,6 +186,7 @@ public class DashboardFrame extends JFrame {
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         btn.setPreferredSize(new Dimension(240, 46));
+        btn.setMinimumSize(new Dimension(100, 46));
         btn.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 8));
         btn.setMargin(new java.awt.Insets(0, 0, 0, 0));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
